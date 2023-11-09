@@ -1,7 +1,7 @@
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 
 //
-// This source file is part of the TemplatePackage open source project
+// This source file is part of the Stanford Spezi open source project
 // 
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 // 
@@ -12,22 +12,26 @@ import PackageDescription
 
 
 let package = Package(
-    name: "TemplatePackage",
+    name: "SpeziSpeech",
     platforms: [
-        .iOS(.v16),
-        .watchOS(.v9)
+        .iOS(.v16)
     ],
     products: [
-        .library(name: "TemplatePackage", targets: ["TemplatePackage"])
+        .library(name: "SpeziSpeechRecognizer", targets: ["SpeziSpeechRecognizer"]),
+        .library(name: "SpeziSpeechSynthesizer", targets: ["SpeziSpeechSynthesizer"])
     ],
     targets: [
         .target(
-            name: "TemplatePackage"
+            name: "SpeziSpeechRecognizer"
+        ),
+        .target(
+            name: "SpeziSpeechSynthesizer"
         ),
         .testTarget(
-            name: "TemplatePackageTests",
+            name: "SpeziSpeechTests",
             dependencies: [
-                .target(name: "TemplatePackage")
+                .target(name: "SpeziSpeechRecognizer"),
+                .target(name: "SpeziSpeechSynthesizer")
             ]
         )
     ]
