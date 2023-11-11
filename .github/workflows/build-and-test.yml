@@ -20,14 +20,15 @@ jobs:
     name: Build and Test Swift Package iOS
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      scheme: SpeziSpeech
+      scheme: SpeziSpeech-Package
+      xcodeversion: 15.0
       artifactname: SpeziSpeech.xcresult
   packagevisionos:
     name: Build and Test Swift Package visionOS
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      xcodeversion: latest
-      scheme: SpeziSpeech
+      scheme: SpeziSpeech-Package
+      xcodeversion: 15.0
       resultBundle: SpeziSpeechVisionOS.xcresult
       destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
       artifactname: SpeziSpeechVisionOS.xcresult
@@ -37,6 +38,7 @@ jobs:
     with:
       path: 'Tests/UITests'
       scheme: TestApp
+      xcodeversion: 15.0
       artifactname: TestApp.xcresult
   ipados:
     name: Build and Test iPadOS
@@ -44,6 +46,7 @@ jobs:
     with:
       path: 'Tests/UITests'
       scheme: TestApp
+      xcodeversion: 15.0
       resultBundle: TestAppiPadOS.xcresult
       destination: 'platform=iOS Simulator,name=iPad mini (6th generation)'
       artifactname: TestAppiPadOS.xcresult
@@ -52,8 +55,8 @@ jobs:
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
       codeql: true
-      xcodeversion: '14.3.1'
       scheme: SpeziSpeech
+      xcodeversion: 15.0
     permissions:
       security-events: write
       actions: read
