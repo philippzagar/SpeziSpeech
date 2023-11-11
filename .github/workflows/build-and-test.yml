@@ -28,7 +28,7 @@ jobs:
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
       scheme: SpeziSpeech-Package
-      xcodeversion: 15.0
+      xcodeversion: latest
       resultBundle: SpeziSpeechVisionOS.xcresult
       destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
       artifactname: SpeziSpeechVisionOS.xcresult
@@ -55,7 +55,7 @@ jobs:
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
       codeql: true
-      scheme: SpeziSpeech
+      scheme: SpeziSpeech-Package
       xcodeversion: 15.0
     permissions:
       security-events: write
