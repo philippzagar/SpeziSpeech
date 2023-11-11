@@ -7,18 +7,20 @@
 //
 
 import Speech
+import Observation
 
 /// Encapsulates the functionality of the `SFSpeechRecognizer`.
 ///
 /// It provides methods to start and stop voice recognition, and publishes the state of recognition and its availability.
-public class SpeechRecognizer: NSObject, ObservableObject, SFSpeechRecognizerDelegate {
+@Observable
+public class SpeechRecognizer: NSObject, SFSpeechRecognizerDelegate {
     private let speechRecognizer: SFSpeechRecognizer?
     private let audioEngine: AVAudioEngine?
     
     /// Indicates whether the speech recognition is currently in progress.
-    @Published public private(set) var isRecording = false
+    public private(set) var isRecording = false
     /// Indicates the availability of the speech recognition service.
-    @Published public private(set) var isAvailable: Bool
+    public private(set) var isAvailable: Bool
     
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?

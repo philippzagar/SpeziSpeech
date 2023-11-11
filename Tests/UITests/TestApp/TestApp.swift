@@ -15,7 +15,18 @@ import SpeziSpeechSynthesizer
 struct UITestsApp: App {
     var body: some Scene {
         WindowGroup {
-            Text("Stanford SpeziSpeech")
+            SpeechTestView()
         }
+    }
+    
+    
+    func startRecordingAction() {
+        // Insert the start functionality here
+        print("Start button tapped")
+    }
+    
+    func stopRecordingAction() {
+        // Insert the stop functionality here
+        print("Stop button tapped")
     }
 }

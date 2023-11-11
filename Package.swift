@@ -14,7 +14,7 @@ import PackageDescription
 let package = Package(
     name: "SpeziSpeech",
     platforms: [
-        .iOS(.v16)
+        .iOS(.v17)
     ],
     products: [
         .library(name: "SpeziSpeechRecognizer", targets: ["SpeziSpeechRecognizer"]),

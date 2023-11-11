@@ -7,19 +7,21 @@
 //
 
 import AVFoundation
+import Observation
 
 
 /// An object that produces synthesized speech from text utterances.
 ///
 /// Encapsulates the functionality of the `AVSpeechSynthesizer`.
-public class SpeechSynthesizer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+@Observable
+public class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate {
     private let avSpeechSynthesizer = AVSpeechSynthesizer()
     
     
     /// A Boolean value that indicates whether the speech synthesizer is speaking or is in a paused state and has utterances to speak.
-    @Published public private(set) var isSpeaking = false
+    public private(set) var isSpeaking = false
     /// A Boolean value that indicates whether a speech synthesizer is in a paused state.
-    @Published public private(set) var isPaused = false
+    public private(set) var isPaused = false
     
     
     override public init() {
