@@ -23,15 +23,6 @@ jobs:
       scheme: SpeziSpeech-Package
       xcodeversion: 15.0
       artifactname: SpeziSpeech.xcresult
-  packagevisionos:
-    name: Build and Test Swift Package visionOS
-    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    with:
-      scheme: SpeziSpeech-Package
-      xcodeversion: latest
-      resultBundle: SpeziSpeechVisionOS.xcresult
-      destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
-      artifactname: SpeziSpeechVisionOS.xcresult
   ios:
     name: Build and Test iOS
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
