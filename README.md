@@ -25,7 +25,7 @@ The Spezi Speech component provides an easy and convenient way to recognize (spe
 ## Setup
 
 
-### 1. Add Spezi Bluetooth as a Dependency
+### 1. Add Spezi Speech as a Dependency
 
 You need to add the Spezi Speech Swift package to
 [your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#) or
@@ -34,51 +34,78 @@ You need to add the Spezi Speech Swift package to
 > [!IMPORTANT]  
 > If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to setup the core Spezi infrastructure.
 
+### 2. Configure target properties
+
+To ensure that your application has the necessary permissions for microphone access and speech recognition, follow the steps below to configure the target properties within your Xcode project:
+
+- Open your project settings in Xcode by selecting *PROJECT_NAME > TARGET_NAME > Info* tab.
+- You will need to add two entries to the `Custom iOS Target Properties` (so the `Info.plist` file) to provide descriptions for why your app requires these permissions:
+   - Add a key named `Privacy - Microphone Usage Description` and provide a string value that describes why your application needs access to the microphone. This description will be displayed to the user when the app first requests microphone access.
+   - Add another key named `Privacy - Speech Recognition Usage Description` with a string value that explains why your app requires the speech recognition capability. This will be presented to the user when the app first attempts to perform speech recognition.
+
+These entries are mandatory for apps that utilize microphone and speech recognition features. Failing to provide them will result in your app being unable to access these features. 
 
 ## Example
 
-`SpeechExample` provides a demonstration of the capabilities of the Spezi Speech module.
+`SpeechTestView` provides a demonstration of the capabilities of the Spezi Speech module.
 It showcases the interaction with the [`SpeechRecognizer`](https://swiftpackageindex.com/stanfordspezi/spezispeech/documentation/spezispeech/speechrecognizer) to provide speech-to-text capabilities and the [`SpeechSynthesizer`](https://swiftpackageindex.com/stanfordspezi/spezispeech/documentation/spezispeech/speechsynthesizer) to generate speech from text.
 
 
 ```swift
-struct SpeechExample: View {
-   private let speechRecognizer = SpeechRecognizer()
-   private let speechSynthesizer = SpeechSynthesizer()
-   var message = ""
+struct SpeechTestView: View {
+   /// Instantiate the `SpeechRecognizer` and `SpeechSynthesizer` as SwiftUI `State` properties.
+   @State private var speechRecognizer = SpeechRecognizer()
+   @State private var speechSynthesizer = SpeechSynthesizer()
+   /// The transcribed message from the user's voice input.
+   @State private var message = ""
+
 
    var body: some View {
       VStack {
-         Button("Start") {
-               startAction()
+         /// Button used to start and stop recording by triggering the `microphoneButtonPressed()` function.
+         Button("Record") {
+            microphoneButtonPressed()
          }
-         .padding()
+            .padding(.bottom)
 
-         Button("Stop") {
-               stopAction()
+
+         /// Button used to start and stop playback of the transcribed message by triggering the `playbackButtonPressed()` function.
+         Button("Playback") {
+            playbackButtonPressed()
          }
-         .padding()
+      }
+   }
+
+
+   private func microphoneButtonPressed() {
+      if speechRecognizer.isRecording {
+         /// If speech is currently recognized, stop the transcribing.
+         speechRecognizer.stop()
+      } else {
+         /// If the recognizer is idle, start a new recording.
+         Task {
+            do {
+               /// The `speechRecognizer.start()` function returns an `AsyncThrowingStream` that yields the transcribed text.
+               for try await result in speechRecognizer.start() {
+                  /// Access the string-based result of the transcribed result.
+                  message = result.bestTranscription.formattedString
+               }
+            }
+         }
+      }
+   }
+    
+   private func playbackButtonPressed() {
+      if speechSynthesizer.isSpeaking {
+         /// If speech is currently synthezized, pause the playback.
+         speechSynthesizer.pause()
+      } else {
+         /// If synthesizer is idle, start with the text-to-speech functionality.
+         speechSynthesizer.speak(message)
       }
    }
 }
 ```
-
-
-## How To Use This Template
-
-The template repository contains a template Swift Package, including a continuous integration setup. 
-
-Follow these steps to customize it to your needs:
-1. Rename the Swift Package. Be sure that you update the name in the `build-and-test.yml` GitHub Action accordingly. If you have multiple targets in your Swift Package, you need to pass the name of the Swift Package followed by an `-Package` as the scheme to the GitHub Action, e.g., `StanfordProject-Package` if your Swift Package is named `StanfordProject`.
-2. If your Swift Package does not provide any user interface or does not require an iOS application environment to function, you can remove the `UITests` application from the `Tests` folder. You need to update the `build-and-test.yml` GitHub Action accordingly by removing the GitHub Action that builds and tests the application, removing the dependency from the code coverage upload step, and removing the UI test `.xresult` input from the code coverage test. 
-3. If your Swift Package uses UI test, you need to ...
-   - ... add it to the scheme editor (*Scheme > Edit Scheme*) and your targets to the "Build" configuration and ensure that it is built before the test app target when building for the "Test" configuration. It is not required to enable building for other configurations like "Analyze", "Run", "Profile", or "Archive".
-   - ... add it as a linked framework in the main target configuration (In your Xcode project settings, select your *test app target > General > Frameworks, Libraries, and Embedded Comments*).
-   - ... add ensure that the targets are all added in the code coverage settings of your .xctestplan file in the Xcode Project (*Shared Settings > Code Coverage > Code Coverage*).
-4. You will either need to add the [CodeCov GitHub App](https://github.com/apps/codecov) or add a codecov.io token to your [GitHub Actions Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-an-environment) following the instructions of the [Codecov GitHub Action](https://github.com/marketplace/actions/codecov#usage). The StanfordBDHG organization already has the [CodeCov GitHub App](https://github.com/apps/codecov) installed. If you do not want to cover test coverage data, you can remove the code coverage job in the `build-and-test.yml` GitHub Action.
-5. Adjust this README.md to describe your project and adjust the badges at the top to point to the correct GitHub Action of your repository and Codecov badge.
-6. The Swift Package template includes a Swift Package Index configuration file to automatically build the package and [host the documentation on the Swift Package Index website](https://blog.swiftpackageindex.com/posts/auto-generating-auto-hosting-and-auto-updating-docc-documentation/). Adjust the `.spi.yml` file to include all targets that you want to build documentation for. You can follow the [instructions of the Swift Package Index](https://swiftpackageindex.com/add-a-package) to include your Swift Package in the Swift Package Index. You can link to the [API documentation](https://swiftpackageindex.com/StanfordBDHG/SwiftPackageTemplate/documentation) from your README file.
-7. Adjust the CITATION.cff file to amend information about the new Swift Package ([learn more about CITATION files on GitHub](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files)) and [register the Swift Package on Zenodo](https://docs.github.com/en/repositories/archiving-a-github-repository/referencing-and-citing-content). 
 
 
 ## Installation

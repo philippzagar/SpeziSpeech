@@ -18,15 +18,4 @@ struct UITestsApp: App {
             SpeechTestView()
         }
     }
-    
-    
-    func startRecordingAction() {
-        // Insert the start functionality here
-        print("Start button tapped")
-    }
-    
-    func stopRecordingAction() {
-        // Insert the stop functionality here
-        print("Stop button tapped")
-    }
 }

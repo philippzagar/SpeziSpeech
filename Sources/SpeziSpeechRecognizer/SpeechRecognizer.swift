@@ -8,12 +8,44 @@
 
 import Speech
 import Observation
+import os
 
-/// Encapsulates the functionality of the `SFSpeechRecognizer`.
-///
+/// The Spezi ``SpeechRecognizer`` encapsulates the functionality of Apple's `Speech` framework, more specifically the `SFSpeechRecognizer`.
 /// It provides methods to start and stop voice recognition, and publishes the state of recognition and its availability.
+///
+/// ```swift
+/// struct SpeechRecognizerView: View {
+///     @State private var speechRecognizer = SpeechRecognizer()
+///     /// The transcribed message from the user's voice input.
+///     @State private var message = ""
+///
+///     var body: some View {
+///         Button("Record") {
+///             microphoneButtonPressed()
+///         }
+///     }
+///
+///     private func microphoneButtonPressed() {
+///         if speechRecognizer.isRecording {
+///            /// If speech is currently recognized, stop the transcribing.
+///            speechRecognizer.stop()
+///         } else {
+///            /// If the recognizer is idle, start a new recording.
+///            Task {
+///               do {
+///                  /// The `speechRecognizer.start()` function returns an `AsyncThrowingStream` that yields the transcribed text.
+///                  for try await result in speechRecognizer.start() {
+///                      /// Access the string-based result of the transcribed result
+///                      message = result.bestTranscription.formattedString
+///                  }
+///             }
+///         }
+///     }
+/// }
+/// ```
 @Observable
 public class SpeechRecognizer: NSObject, SFSpeechRecognizerDelegate {
+    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziSpeech")
     private let speechRecognizer: SFSpeechRecognizer?
     private let audioEngine: AVAudioEngine?
     
@@ -48,20 +80,18 @@ public class SpeechRecognizer: NSObject, SFSpeechRecognizerDelegate {
     
     /// Starts the speech recognition process.
     ///
-    /// - Returns: An asynchronous stream of speech recognition results.
+    /// - Returns: An asynchronous stream that yields the speech recognition results.
     public func start() -> AsyncThrowingStream<SFSpeechRecognitionResult, Error> { // swiftlint:disable:this function_body_length
-        // We allow a larger function and closure length as the function provides a clear encapsulated functionality and the closue is mainly the function
-        // wrapped in a continuation.
         AsyncThrowingStream { continuation in // swiftlint:disable:this closure_body_length
             guard !isRecording else {
-                print("You already having a recording session in progress, please cancel the first one using `stop` before starting a new session.")
+                SpeechRecognizer.logger.warning("You already having a recording session in progress, please cancel the first one using `stop` before starting a new session.")
                 stop()
                 continuation.finish()
                 return
             }
             
             guard isAvailable, let audioEngine, let speechRecognizer else {
-                print("The speechrecognizer is not available.")
+                SpeechRecognizer.logger.error("The SpeechRecognizer is not available.")
                 stop()
                 continuation.finish()
                 return
@@ -72,7 +102,7 @@ public class SpeechRecognizer: NSObject, SFSpeechRecognizerDelegate {
                 try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
                 try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
             } catch {
-                print("Error setting up the audio session: \(error.localizedDescription)")
+                SpeechRecognizer.logger.error("Error setting up the audio session: \(error.localizedDescription)")
                 stop()
                 continuation.finish(throwing: error)
             }
@@ -106,7 +136,7 @@ public class SpeechRecognizer: NSObject, SFSpeechRecognizerDelegate {
                 isRecording = true
                 try audioEngine.start()
             } catch {
-                print("Error setting up the audio session: \(error.localizedDescription)")
+                SpeechRecognizer.logger.error("Error setting up the audio session: \(error.localizedDescription)")
                 stop()
                 continuation.finish(throwing: error)
             }

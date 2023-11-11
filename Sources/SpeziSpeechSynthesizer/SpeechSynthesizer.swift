@@ -10,11 +10,33 @@ import AVFoundation
 import Observation
 
 
-/// An object that produces synthesized speech from text utterances.
+/// The Spezi ``SpeechSynthesizer`` encapsulates the functionality of Apple's `AVFoundation` framework, more specifically the `AVSpeechSynthesizer`.
+/// It provides methods to start and stop voice synthesizing, and publishes the state of the synthesization.
 ///
-/// Encapsulates the functionality of the `AVSpeechSynthesizer`.
+/// ```swift
+/// struct SpeechSynthesizerView: View {
+///     @State private var speechRecognizer = SpeechSynthesizer()
+///     // A textual message that will be synthesized to natural language speech.
+///     private let message = "Hello, this is the SpeziSpeech framework!"
+///
+///     var body: some View {
+///         Button("Playback") {
+///             playbackButtonPressed()
+///         }
+///     }
+///
+///     private func playbackButtonPressed() {
+///         if speechSynthesizer.isSpeaking {
+///             speechSynthesizer.pause()
+///         } else {
+///             speechSynthesizer.speak(message)
+///         }
+///     }
+/// }
+/// ```
 @Observable
 public class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate {
+    /// The wrapped  `AVSpeechSynthesizer` instance.
     private let avSpeechSynthesizer = AVSpeechSynthesizer()
     
     
@@ -40,7 +62,7 @@ public class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate {
         if let language {
             utterance.voice = AVSpeechSynthesisVoice(language: language)
         }
-
+        
         speak(utterance)
     }
     
@@ -48,6 +70,32 @@ public class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate {
     /// - Parameter utterance: An `AVSpeechUtterance` instance that contains text to speak.
     public func speak(_ utterance: AVSpeechUtterance) {
         avSpeechSynthesizer.speak(utterance)
+    }
+    
+    /// Pauses the current output speech from the speech synthesizer.
+    /// - Parameters:
+    ///   - pauseMethod: Defines when the output should be stopped via the `AVSpeechBoundary`.
+    public func pause(at pauseMethod: AVSpeechBoundary = .immediate) {
+        if isSpeaking {
+            avSpeechSynthesizer.pauseSpeaking(at: pauseMethod)
+        }
+    }
+    
+    /// Resumes the output of the speech synthesizer.
+    public func continueSpeaking() {
+        if isPaused {
+            avSpeechSynthesizer.continueSpeaking()
+        }
+    }
+    
+    /// Stops the output by the speech synthesizer and cancels all unspoken utterances from the synthesizer’s queue.
+    /// It is not possible to resume a stopped utterance.
+    /// - Parameters:
+    ///   - stopMethod: Defines when the output should be stopped via the `AVSpeechBoundary`.
+    public func stop(at stopMethod: AVSpeechBoundary = .immediate) {
+        if isSpeaking || isPaused {
+            avSpeechSynthesizer.stopSpeaking(at: stopMethod)
+        }
     }
     
     

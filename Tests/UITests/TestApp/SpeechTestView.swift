@@ -1,8 +1,9 @@
 //
-//  SpeechTestView.swift
-//  TestApp
+// This source file is part of the Stanford Spezi open-source project
 //
-//  Created by Philipp Zagar on 10.11.23.
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
 //
 
 import SwiftUI
@@ -18,16 +19,29 @@ struct SpeechTestView: View {
     
     var body: some View {
         VStack {
+            Text("Recognized Text")
+            
             ScrollView {
                 Text(message)
-                    .frame(width: 350, height: 450)
+                    .padding()
             }
-                .frame(width: 350, height: 450)
+                .frame(
+                    width: UIScreen.main.bounds.width * 0.8,
+                    height: UIScreen.main.bounds.height * 0.3
+                )
                 .border(.gray)
-                .padding()
+                .padding(.horizontal)
+                .padding(.bottom)
             
-            microphoneButton
-                .padding()
+            if speechRecognizer.isAvailable {
+                microphoneButton
+                    .padding()
+            }
+            
+            if !message.isEmpty && !speechRecognizer.isRecording {
+                playbackButton
+                    .padding()
+            }
         }
     }
     
@@ -53,11 +67,35 @@ struct SpeechTestView: View {
         )
     }
     
+    private var playbackButton: some View {
+        Button(
+            action: {
+                playbackButtonPressed()
+            },
+            label: {
+                Image(systemName: "play.fill")
+                    .accessibilityLabel(Text("Playback Button"))
+                    .font(.largeTitle)
+                    .foregroundColor(
+                        speechSynthesizer.isSpeaking ? .blue : Color(.systemGray2)
+                    )
+                    .scaleEffect(speechSynthesizer.isSpeaking ? 1.2 : 1.0)
+                    .opacity(speechSynthesizer.isSpeaking ? 0.7 : 1.0)
+                    .animation(
+                        speechSynthesizer.isSpeaking ? .easeInOut(duration: 0.5).repeatForever(autoreverses: true) : .default,
+                        value: speechSynthesizer.isSpeaking
+                    )
+            }
+        )
+    }
+    
     
     private func microphoneButtonPressed() {
         if speechRecognizer.isRecording {
             speechRecognizer.stop()
         } else {
+            message = ""
+            
             Task {
                 do {
                     for try await result in speechRecognizer.start() {
@@ -67,7 +105,16 @@ struct SpeechTestView: View {
             }
         }
     }
+    
+    private func playbackButtonPressed() {
+        if speechSynthesizer.isSpeaking {
+            speechSynthesizer.pause()
+        } else {
+            speechSynthesizer.speak(message)
+        }
+    }
 }
+
 
 #Preview {
     SpeechTestView()
