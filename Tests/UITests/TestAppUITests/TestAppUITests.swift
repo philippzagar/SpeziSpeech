@@ -20,6 +20,6 @@ class TestAppUITests: XCTestCase {
     func testSpeziSpeech() throws {
         let app = XCUIApplication()
         app.launch()
-        XCTAssert(app.staticTexts["Stanford SpeziSpeech"].waitForExistence(timeout: 0.1))
+        XCTAssert(app.staticTexts["SpeziSpeech"].waitForExistence(timeout: 0.1))
     }
 }

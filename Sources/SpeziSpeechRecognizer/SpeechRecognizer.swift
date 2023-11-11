@@ -6,9 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Speech
 import Observation
 import os
+import Speech
 
 /// The Spezi ``SpeechRecognizer`` encapsulates the functionality of Apple's `Speech` framework, more specifically the `SFSpeechRecognizer`.
 /// It provides methods to start and stop voice recognition, and publishes the state of recognition and its availability.
@@ -84,7 +84,9 @@ public class SpeechRecognizer: NSObject, SFSpeechRecognizerDelegate {
     public func start() -> AsyncThrowingStream<SFSpeechRecognitionResult, Error> { // swiftlint:disable:this function_body_length
         AsyncThrowingStream { continuation in // swiftlint:disable:this closure_body_length
             guard !isRecording else {
-                SpeechRecognizer.logger.warning("You already having a recording session in progress, please cancel the first one using `stop` before starting a new session.")
+                SpeechRecognizer.logger.warning(
+                    "You already having a recording session in progress, please cancel the first one using `stop` before starting a new session."
+                )
                 stop()
                 continuation.finish()
                 return

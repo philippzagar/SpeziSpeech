@@ -6,9 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SwiftUI
 import SpeziSpeechRecognizer
 import SpeziSpeechSynthesizer
+import SwiftUI
 
 
 struct SpeechTestView: View {
@@ -19,7 +19,7 @@ struct SpeechTestView: View {
     
     var body: some View {
         VStack {
-            Text("Recognized Text")
+            Text("SpeziSpeech")
             
             ScrollView {
                 Text(message)
