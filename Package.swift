@@ -13,6 +13,7 @@ import PackageDescription
 
 let package = Package(
     name: "SpeziSpeech",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],
