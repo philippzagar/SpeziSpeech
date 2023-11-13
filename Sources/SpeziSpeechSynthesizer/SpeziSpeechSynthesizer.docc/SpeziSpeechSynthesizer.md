@@ -37,8 +37,8 @@ import SwiftUI
 struct SpeechTestView: View {
    /// Instantiate the `SpeechSynthesizer` as a SwiftUI `State` property.
    @State private var speechSynthesizer = SpeechSynthesizer()
-   // The message to synthesize speech from.
-   private let message = "Hello Spezi, this is a test message."
+   /// A textual message that will be synthesized to natural language speech.
+   private let message = "Hello, this is the SpeziSpeech framework!"
 
 
    var body: some View {
